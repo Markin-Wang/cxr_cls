@@ -1,0 +1,13 @@
+CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 train_ve.py \
+--exp_name train_mimic \
+--dataset_name mimic_cxr_dsr2 \
+--batch_size 32 \
+--epochs 5 \
+--learning_rate 5e-5 \
+--save_dir ./results/mimic_cxr \
+--ve_name swin_b \
+--weight_decay 5e-5 \
+--optim AdamW \
+--lr_scheduler step \
+--decay_rate 0.8 \
+--seed 456789 \
