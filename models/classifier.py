@@ -94,7 +94,7 @@ class Classifier(nn.Module):
                 patch_feats, avg_feats = feats[:, 1:, :], feats[:, 0, :]
             elif self.ve_name.startswith('swin'):
                 x = self.model(images)
-                x = x.permute([0, 3, 1, 2])
+                x = x.permute(0, 3, 1, 2)
                 x = self.avg_fnt(x)
                 avg_feats = self.flatten(x)
             elif self.ve_name.startswith('resnet'):
