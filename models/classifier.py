@@ -23,13 +23,10 @@ class Classifier(nn.Module):
             # config.MODEL.SWIN.DEPTHS = config.MODEL.SWIN.DEPTHS[:-1]
             # config.freeze()
             model = getattr(models,args.ve_name)(weights='DEFAULT')
-            print(model)
             self.num_features = model.head.in_features
-            modules = list(model.children())[:-2]
+            modules = list(model.children())[:-1]
             self.model = nn.Sequential(*modules)
-            self.avg_fnt = torch.nn.AdaptiveAvgPool2d(1)
-            self.flatten = torch.nn.Flatten(1)
-            #print(self.model)
+            print(self.model)
         elif args.ve_name.lower().startswith('resnet101'):
             model = getattr(models, args.ve_name)(pretrained=True)
             self.num_features = model.fc.in_features
@@ -94,14 +91,7 @@ class Classifier(nn.Module):
                 feats, attn_weights = self.model.forward_patch_features(images)
                 patch_feats, avg_feats = feats[:, 1:, :], feats[:, 0, :]
             elif self.ve_name.startswith('swin'):
-                print(4444,images.shape)
-                x = self.model(images)
-                print(3333,x.shape)
-                x = x.permute(0, 3, 1, 2)
-                print(111, x.shape)
-                x = self.avg_fnt(x)
-                print(222, x.shape)
-                avg_feats = self.flatten(x)
+                avg_feats = self.model(images)
             elif self.ve_name.startswith('resnet'):
                 patch_feats = self.model(images)
                 avg_feats = F.adaptive_avg_pool2d(patch_feats, (1, 1)).squeeze().reshape(-1, patch_feats.size(1))
