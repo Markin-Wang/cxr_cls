@@ -23,12 +23,13 @@ class Classifier(nn.Module):
             # config.MODEL.SWIN.DEPTHS = config.MODEL.SWIN.DEPTHS[:-1]
             # config.freeze()
             model = getattr(models,args.ve_name)(weights='DEFAULT')
+            print(model)
             self.num_features = model.head.in_features
             modules = list(model.children())[:-2]
             self.model = nn.Sequential(*modules)
             self.avg_fnt = torch.nn.AdaptiveAvgPool2d(1)
             self.flatten = torch.nn.Flatten(1)
-            print(self.model)
+            #print(self.model)
         elif args.ve_name.lower().startswith('resnet101'):
             model = getattr(models, args.ve_name)(pretrained=True)
             self.num_features = model.fc.in_features
