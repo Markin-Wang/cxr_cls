@@ -238,7 +238,7 @@ class MimiccxrSingleImageClsDataset(BaseDataset):
         image_id = example['id']
         label = np.zeros(self.num_classes)
         label[example['label']] = 1
-        print(example['label'], label.sum())
+        #print(example['label'], label.sum())
         image_path = example['image_path']
         image = Image.open(os.path.join(self.image_dir, image_path[0])).convert('RGB')
         if self.transform is not None:
