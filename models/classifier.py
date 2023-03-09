@@ -93,7 +93,9 @@ class Classifier(nn.Module):
                 feats, attn_weights = self.model.forward_patch_features(images)
                 patch_feats, avg_feats = feats[:, 1:, :], feats[:, 0, :]
             elif self.ve_name.startswith('swin'):
+                print(4444,images.shape)
                 x = self.model(images)
+                print(3333,x.shape)
                 x = x.permute(0, 3, 1, 2)
                 print(111, x.shape)
                 x = self.avg_fnt(x)
