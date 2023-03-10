@@ -42,7 +42,7 @@ class BaseDataset(Dataset):
         #     self.examples[i]['ids'] = tokenizer(self.examples[i]['report'])[:self.max_seq_length]
         #     self.examples[i]['mask'] = [1] * len(self.examples[i]['ids'])
         #print(111111, len(self.examples))
-        self.num_classes = 3770
+        self.num_classes = 3620
 
 
     def __len__(self):
