@@ -42,6 +42,7 @@ class R2DataLoader(DataLoader):
             self.dataset = IuxrayMultiImageClsDataset(self.args, self.split, transform=self.transform, vis = self.vis)
         elif self.dataset_name.startswith('mimic'):
             self.dataset = MimiccxrSingleImageClsDataset(self.args, self.split, transform=self.transform, vis = self.vis)
+            # self.dataset = MimiccxrSingleImageDataset(self.args, split=self.split, transform=self.transform)
         num_tasks = dist.get_world_size()
         global_rank = dist.get_rank()
         self.sampler = torch.utils.data.DistributedSampler(
