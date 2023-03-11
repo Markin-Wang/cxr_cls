@@ -248,8 +248,8 @@ def train(args):
     # Distributed training
     # if args.local_rank != -1:
     #     model = DDP(model, message_size=250000000, gradient_predivide_factor=get_world_size())
-    if args.n_gpu > 1:
-        model = torch.nn.DataParallel(model)
+    # if args.n_gpu > 1:
+    #     model = torch.nn.DataParallel(model)
 
     # Train!
     logger.info("***** Running training *****")

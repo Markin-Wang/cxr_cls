@@ -224,7 +224,7 @@ class IuxrayMultiImageClsDataset(Dataset):
 class MimiccxrSingleImageClsDataset(BaseDataset):
     def __init__(self, args, split, transform=None, vis = False):
         self.image_dir = os.path.join(args.data_dir, args.dataset_name, 'images')
-        self.ann_path = os.path.join(args.data_dir, args.dataset_name, 'entities_anno.json')
+        self.ann_path = os.path.join(args.data_dir, args.dataset_name, 'entities_anno_trainval.json')
         self.split = split
         self.ann = json.loads(open(self.ann_path, 'r').read())
         self.examples = self.ann[self.split]

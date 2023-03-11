@@ -121,7 +121,7 @@ def test(args):
         # labels = labels.cuda(non_blocking=True)
         image_ids.extend(image_id)
         # compute output
-        with autocast(dtype=torch.float16):
+        with autocast(dtype=torch.float32):
             logits = model(images)
 
         torch.cuda.synchronize()
