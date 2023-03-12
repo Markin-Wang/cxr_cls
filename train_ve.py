@@ -261,7 +261,6 @@ def train(args):
     # logger.info("  Gradient Accumulation steps = %d", args.gradient_accumulation_steps)
 
     model.zero_grad()
-    set_seed(args)  # Added here for reproducibility (even between python 2 and 3)
     losses = AverageMeter()
     global_step, max_accuracy = 0, 0.0
     criterion = torch.nn.BCEWithLogitsLoss()
@@ -321,10 +320,17 @@ def main():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         args.n_gpu = torch.cuda.device_count()
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
+            rank = int(os.environ["RANK"])
+            world_size = int(os.environ['WORLD_SIZE'])
+            print(f"RANK and WORLD_SIZE in environ: {rank}/{world_size}")
+        else:
+            rank = -1
+            world_size = -1
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
-        torch.distributed.init_process_group(backend='nccl',
-                                             timeout=timedelta(minutes=60), rank=0, world_size=args.n_gpu)
+        torch.distributed.init_process_group(backend='nccl', init_method='env://',
+                                             timeout=timedelta(minutes=60), rank=rank, world_size=world_size)
         args.n_gpu = 1
     args.device = device
 
