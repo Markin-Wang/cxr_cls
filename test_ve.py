@@ -86,15 +86,17 @@ def test(args):
     set_seed(args)  # Added here for reproducibility (even between python 2 and 3)
     writer = SummaryWriter(log_dir=os.path.join("logs", args.exp_name))
 
-    # train_loader = R2DataLoader(args, split='train', shuffle=True)
+    train_loader = R2DataLoader(args, split='train', shuffle=False)
     # val_loader = R2DataLoader(args, tokenizer, split='val', shuffle=False)
     test_loader = R2DataLoader(args, split='test', shuffle=False)
-
+    val_loader = R2DataLoader(args, split='val', shuffle=False)
     args, model = setup(args, logger=logger, num_classes=test_loader.num_classes)
+
+    print(model)
 
     model = DDP(model)
 
-    state_dict = torch.load(args.pretrained)['model']
+    state_dict = torch.load(args.pretrained,map_location='cpu')['model']
     #logger.info(state_dict.keys())
     model.load_state_dict(state_dict, strict=True)
 
@@ -123,7 +125,7 @@ def test(args):
         # compute output
         with autocast(dtype=torch.float32):
             logits = model(images)
-
+        logits = torch.sigmoid(logits)
         torch.cuda.synchronize()
         predictions.extend(logits.detach().cpu().numpy())
 

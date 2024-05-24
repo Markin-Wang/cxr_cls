@@ -12,7 +12,7 @@ import numpy as np
 
 
 class BaseDataset(Dataset):
-    def __init__(self, args, split, tokenizer=None, transform=None, test=None):
+    def __init__(self, args, split, tokenizer=None, transform=None, test=None, vis=False):
         self.max_seq_length = args.max_seq_length
         self.split = split
         self.tokenizer = tokenizer
@@ -21,13 +21,12 @@ class BaseDataset(Dataset):
         self.image_dir = os.path.join(args.data_dir, args.dataset_name,  'images')
         self.ann_path = os.path.join(args.data_dir, args.dataset_name, 'annotation.json')
         self.ann = json.loads(open(self.ann_path, 'r').read())
-        # self.labels_path = os.path.join(args.data_dir, args.dataset_name, args.label_path)
-        # self.labels = json.loads(open(self.labels_path, 'r').read())
-        if self.test:
-            selected_parts = ['p10']
+        self.labels_path = os.path.join(args.data_dir, args.dataset_name, args.label_path)
+        self.labels = json.loads(open(self.labels_path, 'r').read())
         self.examples = self.ann[self.split]
-        if self.test and self.split == 'train' and args.dataset_name!='iu_xray':
-            self.examples = [e for part in selected_parts for e in self.examples if part == e['image_path'][0][:3]]
+        self.vis = vis
+        # if self.test and self.split == 'train' and args.dataset_name!='iu_xray':
+        #     self.examples = [e for part in selected_parts for e in self.examples if part == e['image_path'][0][:3]]
         # if args.dataset_name == 'iu_xray':
         #     self._labels = []
         #     for e in self.examples:
@@ -42,7 +41,7 @@ class BaseDataset(Dataset):
         #     self.examples[i]['ids'] = tokenizer(self.examples[i]['report'])[:self.max_seq_length]
         #     self.examples[i]['mask'] = [1] * len(self.examples[i]['ids'])
         #print(111111, len(self.examples))
-        self.num_classes = 3620
+        self.num_classes = 14
 
 
     def __len__(self):
@@ -222,22 +221,13 @@ class IuxrayMultiImageClsDataset(Dataset):
 
 
 class MimiccxrSingleImageClsDataset(BaseDataset):
-    def __init__(self, args, split, transform=None, vis = False):
-        self.image_dir = os.path.join(args.data_dir, args.dataset_name, 'images')
-        self.ann_path = os.path.join(args.data_dir, args.dataset_name, 'entities_anno_trainval.json')
-        self.split = split
-        self.ann = json.loads(open(self.ann_path, 'r').read())
-        self.examples = self.ann[self.split]
-        self.num_classes = self.ann['num_classes']
-        self.transform = transform
-        self.vis = vis
-
     def __getitem__(self, idx):
         example = self.examples[idx]
         image_id = example['id']
-        label = np.zeros(self.num_classes)
-        label[example['label']] = 1
+        # label = np.zeros(self.num_classes)
+        # label[example['label']] = 1
         #print(example['label'], label.sum())
+        label = torch.FloatTensor(np.array(self.labels[image_id]).astype(np.float32))
         image_path = example['image_path']
         image = Image.open(os.path.join(self.image_dir, image_path[0])).convert('RGB')
         if self.transform is not None:

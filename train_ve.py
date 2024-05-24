@@ -330,7 +330,7 @@ def main():
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         torch.distributed.init_process_group(backend='nccl', init_method='env://',
-                                             timeout=timedelta(minutes=60), rank=rank, world_size=world_size)
+                                             timeout=timedelta(minutes=60), rank=rank, world_size=args.n_gpu)
         args.n_gpu = 1
     args.device = device
 

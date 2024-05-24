@@ -24,9 +24,10 @@ class Classifier(nn.Module):
             # config.freeze()
             model = getattr(models,args.ve_name)(weights='DEFAULT')
             self.num_features = model.head.in_features
+            #print(model)
             modules = list(model.children())[:-1]
             self.model = nn.Sequential(*modules)
-            print(self.model)
+            #print(self.model)
         elif args.ve_name.lower().startswith('resnet101'):
             model = getattr(models, args.ve_name)(pretrained=True)
             self.num_features = model.fc.in_features
