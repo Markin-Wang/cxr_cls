@@ -122,7 +122,7 @@ def calculate_metricx(preds, targets):
     for i in range(preds[0].shape[-1]):
         fpr, tpr, thresholds = metrics.roc_curve(targets[:, i], preds[:, i], pos_label=1)
         auclist.append(metrics.auc(fpr, tpr))
-    pred_labels = preds > 0.5
+    pred_labels = preds >= 0.5
     confusion_matrix = metrics.multilabel_confusion_matrix(y_true=targets, y_pred=pred_labels)
     return np.array([x for x in auclist if not np.isnan(x)]), confusion_matrix
 
@@ -236,8 +236,11 @@ def train(args):
     optimizer = build_optimizer(args, model)
     lr_scheduler = build_scheduler(args, optimizer, len(train_loader))
 
-    if args.local_rank != -1:
-        model = DDP(model)
+    # if args.local_rank != -1:
+    #     model = DDP(model)
+    rank = dist.get_rank()
+    device_id = rank % torch.cuda.device_count()
+    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[device_id])
     scaler = GradScaler()
 
     # if args.fp16:
