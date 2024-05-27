@@ -118,7 +118,7 @@ def test(args):
 
     image_ids = []
     predictions = []
-    for idx, (image_id, images) in tqdm(enumerate(test_loader)):
+    for idx, (images, image_id) in tqdm(enumerate(test_loader)):
         images = images.cuda(non_blocking=True)
         # labels = labels.cuda(non_blocking=True)
         image_ids.extend(image_id)

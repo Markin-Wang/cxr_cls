@@ -148,6 +148,7 @@ def validate(args, data_loader, model):
         # compute output
         with autocast(dtype=torch.float16):
             loss, logits = model(images, labels)
+            logits = torch.sigmoid(logits)
 
         torch.cuda.synchronize()
         if idx == 0:
